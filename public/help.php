@@ -67,6 +67,20 @@ $role = getCurrentUserRole();
                 </ol>
             </div>
             
+            <!-- New Features -->
+            <div class="help-section" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
+                <h2 style="color: white;">🆕 New Advanced Features</h2>
+                <div style="line-height: 1.8;">
+                    <p><strong>⚡ Quick Log Templates:</strong> Use pre-defined templates for fast health data entry. Perfect for daily routines!</p>
+                    <p><strong>📊 Advanced Analytics:</strong> Interactive charts show your BP trends, heart rate patterns, and mood distribution with predictive analytics.</p>
+                    <p><strong>🎯 Goals & Achievements:</strong> Set health goals, track your logging streaks, and earn achievement badges.</p>
+                    <p><strong>💊 Medication Effectiveness:</strong> Analyze how your medications impact your health metrics over time.</p>
+                    <p><strong>📁 Data Export:</strong> Export your health data to CSV or Excel format for sharing with doctors.</p>
+                    <p><strong>🔮 Predictive Analytics:</strong> See if your blood pressure is trending up, down, or staying stable.</p>
+                    <p><strong>❤️ Risk Assessment:</strong> Get cardiovascular risk scores based on your health data.</p>
+                </div>
+            </div>
+            
             <!-- FAST Protocol -->
             <div class="help-section">
                 <h2>⚠️ FAST Stroke Warning Signs</h2>
