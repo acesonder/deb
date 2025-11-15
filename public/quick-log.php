@@ -362,8 +362,8 @@ $conn->close();
         };
         
         const fieldConfig = {
-            'systolic_bp': { label: 'Systolic BP', type: 'number', placeholder: '120', required: true },
-            'diastolic_bp': { label: 'Diastolic BP', type: 'number', placeholder: '80', required: true },
+            'systolic_bp': { label: 'Systolic BP', type: 'number', placeholder: '120', required: false },
+            'diastolic_bp': { label: 'Diastolic BP', type: 'number', placeholder: '80', required: false },
             'heart_rate': { label: 'Heart Rate (bpm)', type: 'number', placeholder: '70' },
             'weight': { label: 'Weight (lbs)', type: 'number', step: '0.1', placeholder: '150' },
             'temperature': { label: 'Temperature (°F)', type: 'number', step: '0.1', placeholder: '98.6' },

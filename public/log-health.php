@@ -135,7 +135,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <div class="form-group">
                         <label for="log_date">Date & Time</label>
                         <input type="datetime-local" id="log_date" name="log_date" 
-                               value="<?php echo date('Y-m-d\TH:i'); ?>" required>
+                               value="<?php echo date('Y-m-d\TH:i'); ?>">
+                        <small style="color: var(--text-secondary);">All fields are optional - fill out what you can</small>
                     </div>
                 </div>
                 
