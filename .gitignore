@@ -1,0 +1,43 @@
+# IDE and Editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Environment and configuration
+.env
+config/database.local.php
+
+# Logs
+*.log
+logs/
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+
+# Database dumps
+*.sql.gz
+backup/
+
+# Uploaded files (if any)
+uploads/
+files/
+
+# Cache
+cache/
+
+# Composer (if used in future)
+vendor/
+composer.lock
+
+# Node modules (if added in future)
+node_modules/
+package-lock.json
+
+# Build artifacts
+dist/
+build/
