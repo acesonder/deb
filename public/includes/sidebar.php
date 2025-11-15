@@ -22,9 +22,30 @@
         </li>
         
         <li class="nav-item">
+            <a href="quick-log.php" class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'quick-log.php' ? 'active' : ''; ?>">
+                <span class="nav-icon">⚡</span>
+                <span class="nav-text">Quick Log</span>
+            </a>
+        </li>
+        
+        <li class="nav-item">
             <a href="analytics.php" class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'analytics.php' ? 'active' : ''; ?>">
                 <span class="nav-icon">📈</span>
                 <span class="nav-text">Analytics</span>
+            </a>
+        </li>
+        
+        <li class="nav-item">
+            <a href="analytics-enhanced.php" class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'analytics-enhanced.php' ? 'active' : ''; ?>">
+                <span class="nav-icon">📊</span>
+                <span class="nav-text">Advanced Analytics</span>
+            </a>
+        </li>
+        
+        <li class="nav-item">
+            <a href="goals.php" class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'goals.php' ? 'active' : ''; ?>">
+                <span class="nav-icon">🎯</span>
+                <span class="nav-text">Goals & Achievements</span>
             </a>
         </li>
         
