@@ -57,6 +57,13 @@
         </li>
         
         <li class="nav-item">
+            <a href="medication-effectiveness.php" class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'medication-effectiveness.php' ? 'active' : ''; ?>">
+                <span class="nav-icon">📊</span>
+                <span class="nav-text">Med Effectiveness</span>
+            </a>
+        </li>
+        
+        <li class="nav-item">
             <a href="stroke-warnings.php" class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'stroke-warnings.php' ? 'active' : ''; ?>">
                 <span class="nav-icon">⚠️</span>
                 <span class="nav-text">Stroke Warnings</span>
