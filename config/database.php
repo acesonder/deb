@@ -5,8 +5,8 @@
  */
 
 define('DB_HOST', 'localhost');
-define('DB_USER', 'root');
-define('DB_PASS', '');
+define('DB_USER', 'debuser');
+define('DB_PASS', 'debpass123');
 define('DB_NAME', 'deb_health_tracker');
 
 // Create database connection
