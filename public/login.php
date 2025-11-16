@@ -10,14 +10,20 @@ if (isLoggedIn()) {
 $error = '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    require_once __DIR__ . '/../includes/logger.php';
+    
     $username = $_POST['username'] ?? '';
     $password = $_POST['password'] ?? '';
     
     if (login($username, $password)) {
+        // Get user ID after successful login
+        $user_id = getCurrentUserId();
+        logLogin($username, true, $user_id);
         header('Location: dashboard.php');
         exit();
     } else {
         $error = 'Invalid credentials. Please try again.';
+        logLogin($username, false);
     }
 }
 ?>

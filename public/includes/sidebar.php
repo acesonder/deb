@@ -96,6 +96,12 @@
                 <span class="nav-text">Admin Panel</span>
             </a>
         </li>
+        <li class="nav-item">
+            <a href="admin-logs.php" class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'admin-logs.php' ? 'active' : ''; ?>">
+                <span class="nav-icon">🔍</span>
+                <span class="nav-text">Admin Logs</span>
+            </a>
+        </li>
         <?php endif; ?>
         
         <li class="nav-divider"></li>

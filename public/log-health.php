@@ -10,6 +10,8 @@ $success = '';
 $error = '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    require_once __DIR__ . '/../includes/logger.php';
+    
     $conn = getDBConnection();
     
     // Get form data
@@ -19,13 +21,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $heart_rate = !empty($_POST['heart_rate']) ? $_POST['heart_rate'] : null;
     $weight = !empty($_POST['weight']) ? $_POST['weight'] : null;
     $temperature = !empty($_POST['temperature']) ? $_POST['temperature'] : null;
-    $symptoms = $_POST['symptoms'] ?? null;
-    $medications = $_POST['medications'] ?? null;
-    $notes = $_POST['notes'] ?? null;
+    $symptoms = !empty($_POST['symptoms']) ? trim($_POST['symptoms']) : null;
+    $medications = !empty($_POST['medications']) ? trim($_POST['medications']) : null;
+    $notes = !empty($_POST['notes']) ? trim($_POST['notes']) : null;
     $mood = $_POST['mood'] ?? null;
     $activity_level = $_POST['activity_level'] ?? null;
     $sleep_hours = !empty($_POST['sleep_hours']) ? $_POST['sleep_hours'] : null;
     $stress_level = !empty($_POST['stress_level']) ? $_POST['stress_level'] : null;
+    
+    // Validate: At least one field must be filled
+    $has_data = $systolic_bp || $diastolic_bp || $heart_rate || $weight || $temperature || 
+                $symptoms || $medications || $notes || $mood || $activity_level || 
+                $sleep_hours || $stress_level;
+    
+    if (!$has_data) {
+        $error = 'Please fill in at least one field before submitting.';
+        logValidationError('log-health', ['error' => 'All fields blank'], $user_id);
+    } else {
     
     // Insert health log
     $stmt = $conn->prepare("
@@ -42,6 +54,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     
     if ($stmt->execute()) {
         $success = 'Health data logged successfully!';
+        logFormSubmission('log-health', true, $user_id);
         
         // Check if blood pressure is critical and create alert
         if ($systolic_bp && $diastolic_bp && ($systolic_bp >= 180 || $diastolic_bp >= 120)) {
@@ -50,13 +63,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $alert_stmt->bind_param("is", $user_id, $alert_msg);
             $alert_stmt->execute();
             $alert_stmt->close();
+            logInfo('critical_alert', "Critical BP alert created for user", $user_id);
         }
     } else {
         $error = 'Error logging health data. Please try again.';
+        logFormSubmission('log-health', false, $user_id, ['database_error' => $conn->error]);
     }
     
     $stmt->close();
     $conn->close();
+    }
 }
 ?>
 <!DOCTYPE html>

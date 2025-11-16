@@ -11,18 +11,20 @@ $error = '';
 
 // Handle medication actions
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
+    require_once __DIR__ . '/../includes/logger.php';
     $conn = getDBConnection();
     
     if ($_POST['action'] === 'add_medication') {
-        $med_name = $_POST['medication_name'] ?? '';
-        $dosage = $_POST['dosage'] ?? null;
-        $frequency = $_POST['frequency'] ?? null;
-        $start_date = $_POST['start_date'] ?? null;
-        $prescribing_doctor = $_POST['prescribing_doctor'] ?? null;
-        $notes = $_POST['notes'] ?? null;
+        $med_name = !empty($_POST['medication_name']) ? trim($_POST['medication_name']) : '';
+        $dosage = !empty($_POST['dosage']) ? trim($_POST['dosage']) : null;
+        $frequency = !empty($_POST['frequency']) ? trim($_POST['frequency']) : null;
+        $start_date = !empty($_POST['start_date']) ? $_POST['start_date'] : null;
+        $prescribing_doctor = !empty($_POST['prescribing_doctor']) ? trim($_POST['prescribing_doctor']) : null;
+        $notes = !empty($_POST['notes']) ? trim($_POST['notes']) : null;
         
         if (empty($med_name)) {
             $error = 'Medication name is required.';
+            logValidationError('medications', ['error' => 'Medication name required'], $user_id);
         } else {
             $stmt = $conn->prepare("
                 INSERT INTO medications 
@@ -33,8 +35,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
             
             if ($stmt->execute()) {
                 $success = 'Medication added successfully!';
+                logFormSubmission('medications-add', true, $user_id, ['medication' => $med_name]);
             } else {
                 $error = 'Failed to add medication.';
+                logFormSubmission('medications-add', false, $user_id, ['database_error' => $conn->error]);
             }
             $stmt->close();
         }

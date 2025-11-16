@@ -129,3 +129,21 @@ VALUES ('deb', '$2y$10$YourHashedAccessCodeHere', 'Deb', 'patient', TRUE, 1);
 
 -- Note: The password hash for '80087355' should be generated using password_hash() in PHP
 -- Run the setup script to properly hash the access code
+
+-- Admin logs table for tracking system events and errors
+CREATE TABLE IF NOT EXISTS admin_logs (
+    log_id INT AUTO_INCREMENT PRIMARY KEY,
+    log_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    log_level ENUM('info', 'warning', 'error', 'critical') NOT NULL DEFAULT 'info',
+    log_type VARCHAR(50) NOT NULL,
+    message TEXT NOT NULL,
+    user_id INT,
+    ip_address VARCHAR(45),
+    user_agent TEXT,
+    request_uri TEXT,
+    additional_data JSON,
+    FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE SET NULL,
+    INDEX idx_log_date (log_date),
+    INDEX idx_log_level (log_level),
+    INDEX idx_log_type (log_type)
+);
