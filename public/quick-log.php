@@ -55,7 +55,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['template_type'])) {
     ");
     
     if (!$stmt->bind_param(
-        "iiidddisssss",
+        "iiiidddsissss",
         $user_id,
         $systolic_bp,
         $diastolic_bp,
