@@ -129,3 +129,61 @@ VALUES ('deb', '$2y$10$YourHashedAccessCodeHere', 'Deb', 'patient', TRUE, 1);
 
 -- Note: The password hash for '80087355' should be generated using password_hash() in PHP
 -- Run the setup script to properly hash the access code
+
+-- Admin logs table for tracking system events and errors
+CREATE TABLE IF NOT EXISTS admin_logs (
+    log_id INT AUTO_INCREMENT PRIMARY KEY,
+    log_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    log_level ENUM('info', 'warning', 'error', 'critical') NOT NULL DEFAULT 'info',
+    log_type VARCHAR(50) NOT NULL,
+    message TEXT NOT NULL,
+    user_id INT,
+    ip_address VARCHAR(45),
+    user_agent TEXT,
+    request_uri TEXT,
+    additional_data JSON,
+    FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE SET NULL,
+    INDEX idx_log_date (log_date),
+    INDEX idx_log_level (log_level),
+    INDEX idx_log_type (log_type)
+);
+
+-- Health goals table for tracking user goals
+CREATE TABLE IF NOT EXISTS health_goals (
+    goal_id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    goal_type VARCHAR(50) NOT NULL,
+    goal_description TEXT NOT NULL,
+    target_value DECIMAL(10,2),
+    current_value DECIMAL(10,2),
+    start_date DATE NOT NULL,
+    end_date DATE,
+    is_completed BOOLEAN DEFAULT FALSE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE,
+    INDEX idx_user_goals (user_id)
+);
+
+-- Achievements table for gamification
+CREATE TABLE IF NOT EXISTS achievements (
+    achievement_id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    achievement_type VARCHAR(50) NOT NULL,
+    achievement_name VARCHAR(100) NOT NULL,
+    achievement_description TEXT,
+    earned_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE,
+    INDEX idx_user_achievements (user_id)
+);
+
+-- Logging streaks table for tracking consecutive logging days
+CREATE TABLE IF NOT EXISTS logging_streaks (
+    streak_id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    current_streak INT DEFAULT 0,
+    longest_streak INT DEFAULT 0,
+    last_log_date DATE,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE,
+    UNIQUE KEY unique_user_streak (user_id)
+);

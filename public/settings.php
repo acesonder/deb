@@ -11,6 +11,8 @@ $error = '';
 
 // Handle password change
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
+    require_once __DIR__ . '/../includes/logger.php';
+    
     if ($_POST['action'] === 'change_password') {
         $current_password = $_POST['current_password'] ?? '';
         $new_password = $_POST['new_password'] ?? '';
@@ -18,10 +20,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
         
         if (empty($current_password) || empty($new_password) || empty($confirm_password)) {
             $error = 'All password fields are required.';
+            logValidationError('settings-password', ['error' => 'Required fields missing'], $user_id);
         } elseif ($new_password !== $confirm_password) {
             $error = 'New passwords do not match.';
+            logValidationError('settings-password', ['error' => 'Passwords do not match'], $user_id);
         } elseif (strlen($new_password) < 6) {
             $error = 'New password must be at least 6 characters long.';
+            logValidationError('settings-password', ['error' => 'Password too short'], $user_id);
         } else {
             // Verify current password
             $conn = getDBConnection();
@@ -34,11 +39,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
             if (password_verify($current_password, $user['password_hash'])) {
                 if (changePassword($user_id, $new_password)) {
                     $success = 'Password changed successfully!';
+                    logInfo('password_change', "User changed password successfully", $user_id);
                 } else {
                     $error = 'Failed to change password. Please try again.';
+                    logError('password_change', "Failed to change password", $user_id);
                 }
             } else {
                 $error = 'Current password is incorrect.';
+                logWarning('password_change', "Failed password change attempt - incorrect current password", $user_id);
             }
             
             $stmt->close();

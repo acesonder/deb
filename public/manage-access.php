@@ -17,16 +17,20 @@ $error = '';
 
 // Handle create viewer account
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
+    require_once __DIR__ . '/../includes/logger.php';
+    
     if ($_POST['action'] === 'create_viewer') {
-        $viewer_username = $_POST['viewer_username'] ?? '';
-        $viewer_name = $_POST['viewer_name'] ?? '';
-        $viewer_email = $_POST['viewer_email'] ?? '';
+        $viewer_username = !empty($_POST['viewer_username']) ? trim($_POST['viewer_username']) : '';
+        $viewer_name = !empty($_POST['viewer_name']) ? trim($_POST['viewer_name']) : '';
+        $viewer_email = !empty($_POST['viewer_email']) ? trim($_POST['viewer_email']) : '';
         $viewer_password = $_POST['viewer_password'] ?? '';
         
         if (empty($viewer_username) || empty($viewer_name) || empty($viewer_password)) {
             $error = 'Username, name, and password are required.';
+            logValidationError('manage-access', ['error' => 'Required fields missing for viewer creation'], $user_id);
         } elseif (strlen($viewer_password) < 6) {
             $error = 'Password must be at least 6 characters long.';
+            logValidationError('manage-access', ['error' => 'Password too short'], $user_id);
         } else {
             $new_user_id = createUser($viewer_username, $viewer_password, $viewer_name, 'viewer', $viewer_email);
             
@@ -42,8 +46,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                 }
                 
                 $success = "Viewer account created successfully! Username: $viewer_username";
+                logFormSubmission('manage-access-create-viewer', true, $user_id, ['viewer_username' => $viewer_username]);
             } else {
                 $error = 'Failed to create viewer account. Username may already exist.';
+                logFormSubmission('manage-access-create-viewer', false, $user_id, ['error' => 'Username exists or creation failed']);
             }
         }
     } elseif ($_POST['action'] === 'revoke_access') {

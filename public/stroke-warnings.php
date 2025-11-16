@@ -11,6 +11,7 @@ $error = '';
 
 // Handle new stroke warning submission
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'log_warning') {
+    require_once __DIR__ . '/../includes/logger.php';
     $conn = getDBConnection();
     
     $warning_date = $_POST['warning_date'] ?? date('Y-m-d H:i:s');
@@ -23,8 +24,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
     $dizziness = isset($_POST['dizziness']) ? 1 : 0;
     $loss_of_balance = isset($_POST['loss_of_balance']) ? 1 : 0;
     $severity = $_POST['severity'] ?? 'mild';
-    $action_taken = $_POST['action_taken'] ?? null;
-    $notes = $_POST['notes'] ?? null;
+    $action_taken = !empty($_POST['action_taken']) ? trim($_POST['action_taken']) : null;
+    $notes = !empty($_POST['notes']) ? trim($_POST['notes']) : null;
+    
+    // Validate: At least one symptom must be checked
+    $has_symptoms = $face_drooping || $arm_weakness || $speech_difficulty || 
+                    $sudden_confusion || $vision_problems || $severe_headache || 
+                    $dizziness || $loss_of_balance;
+    
+    if (!$has_symptoms) {
+        $error = 'Please select at least one symptom before submitting.';
+        logValidationError('stroke-warnings', ['error' => 'No symptoms selected'], $user_id);
+    } else {
     
     // Calculate severity based on FAST symptoms
     $critical_symptoms = $face_drooping + $arm_weakness + $speech_difficulty;
@@ -50,6 +61,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
     
     if ($stmt->execute()) {
         $success = 'Stroke warning recorded successfully.';
+        logFormSubmission('stroke-warnings', true, $user_id, ['severity' => $severity, 'symptoms_count' => $critical_symptoms]);
         
         // Create critical alert if severity is severe
         if ($severity === 'severe') {
@@ -58,13 +70,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
             $alert_stmt->bind_param("is", $user_id, $alert_msg);
             $alert_stmt->execute();
             $alert_stmt->close();
+            logCritical('stroke_warning', "Severe stroke warning detected for user", $user_id);
         }
     } else {
         $error = 'Error recording stroke warning. Please try again.';
+        logFormSubmission('stroke-warnings', false, $user_id, ['database_error' => $conn->error]);
     }
     
     $stmt->close();
     $conn->close();
+    }
 }
 
 // Get stroke warning history

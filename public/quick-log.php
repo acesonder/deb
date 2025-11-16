@@ -19,22 +19,33 @@ if ($role !== 'patient' && $role !== 'admin') {
 
 // Handle quick log submission
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['template_type'])) {
+    require_once __DIR__ . '/../includes/logger.php';
+    
     $template_type = $_POST['template_type'];
     $conn = getDBConnection();
     
     // Prepare data based on template type
-    $systolic_bp = $_POST['systolic_bp'] ?? null;
-    $diastolic_bp = $_POST['diastolic_bp'] ?? null;
-    $heart_rate = $_POST['heart_rate'] ?? null;
-    $weight = $_POST['weight'] ?? null;
-    $temperature = $_POST['temperature'] ?? null;
-    $sleep_hours = $_POST['sleep_hours'] ?? null;
-    $activity_level = $_POST['activity_level'] ?? null;
-    $stress_level = $_POST['stress_level'] ?? null;
-    $mood = $_POST['mood'] ?? null;
-    $symptoms = $_POST['symptoms'] ?? null;
-    $medications = $_POST['medications'] ?? null;
-    $notes = $_POST['notes'] ?? "Quick log using template: $template_type";
+    $systolic_bp = !empty($_POST['systolic_bp']) ? $_POST['systolic_bp'] : null;
+    $diastolic_bp = !empty($_POST['diastolic_bp']) ? $_POST['diastolic_bp'] : null;
+    $heart_rate = !empty($_POST['heart_rate']) ? $_POST['heart_rate'] : null;
+    $weight = !empty($_POST['weight']) ? $_POST['weight'] : null;
+    $temperature = !empty($_POST['temperature']) ? $_POST['temperature'] : null;
+    $sleep_hours = !empty($_POST['sleep_hours']) ? $_POST['sleep_hours'] : null;
+    $activity_level = !empty($_POST['activity_level']) ? $_POST['activity_level'] : null;
+    $stress_level = !empty($_POST['stress_level']) ? $_POST['stress_level'] : null;
+    $mood = !empty($_POST['mood']) ? $_POST['mood'] : null;
+    $symptoms = !empty($_POST['symptoms']) ? trim($_POST['symptoms']) : null;
+    $medications = !empty($_POST['medications']) ? trim($_POST['medications']) : null;
+    $notes = !empty($_POST['notes']) ? trim($_POST['notes']) : "Quick log using template: $template_type";
+    
+    // Validate: At least one field must be filled (excluding template_type)
+    $has_data = $systolic_bp || $diastolic_bp || $heart_rate || $weight || $temperature || 
+                $sleep_hours || $activity_level || $stress_level || $mood || $symptoms || $medications;
+    
+    if (!$has_data) {
+        $error_message = 'Please fill in at least one field before submitting.';
+        logValidationError('quick-log', ['error' => 'All fields blank', 'template' => $template_type], $user_id);
+    } else {
     
     $stmt = $conn->prepare("
         INSERT INTO health_logs 
@@ -71,15 +82,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['template_type'])) {
             $alert_stmt->bind_param("is", $user_id, $alert_msg);
             $alert_stmt->execute();
             $alert_stmt->close();
+            logInfo('critical_alert', "Critical BP alert created via quick-log", $user_id);
         }
         
         $success_message = "Health data logged successfully!";
+        logFormSubmission('quick-log', true, $user_id, ['template' => $template_type]);
     } else {
         $error_message = "Error logging data. Please try again.";
+        logFormSubmission('quick-log', false, $user_id, ['database_error' => $conn->error, 'template' => $template_type]);
     }
     
     $stmt->close();
     $conn->close();
+    }
 }
 
 // Get recent logs for reference
