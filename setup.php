@@ -6,8 +6,8 @@
 
 // Configuration
 $db_host = 'localhost';
-$db_user = 'root';
-$db_pass = '';
+$db_user = 'debuser';
+$db_pass = 'debpass123';
 $db_name = 'deb_health_tracker';
 
 // Default credentials

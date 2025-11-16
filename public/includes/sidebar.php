@@ -22,6 +22,13 @@
         </li>
         
         <li class="nav-item">
+            <a href="quick-log.php" class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'quick-log.php' ? 'active' : ''; ?>">
+                <span class="nav-icon">⚡</span>
+                <span class="nav-text">Quick Log</span>
+            </a>
+        </li>
+        
+        <li class="nav-item">
             <a href="analytics.php" class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'analytics.php' ? 'active' : ''; ?>">
                 <span class="nav-icon">📈</span>
                 <span class="nav-text">Analytics</span>
@@ -29,9 +36,30 @@
         </li>
         
         <li class="nav-item">
+            <a href="analytics-enhanced.php" class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'analytics-enhanced.php' ? 'active' : ''; ?>">
+                <span class="nav-icon">📊</span>
+                <span class="nav-text">Advanced Analytics</span>
+            </a>
+        </li>
+        
+        <li class="nav-item">
+            <a href="goals.php" class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'goals.php' ? 'active' : ''; ?>">
+                <span class="nav-icon">🎯</span>
+                <span class="nav-text">Goals & Achievements</span>
+            </a>
+        </li>
+        
+        <li class="nav-item">
             <a href="medications.php" class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'medications.php' ? 'active' : ''; ?>">
                 <span class="nav-icon">💊</span>
                 <span class="nav-text">Medications</span>
+            </a>
+        </li>
+        
+        <li class="nav-item">
+            <a href="medication-effectiveness.php" class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'medication-effectiveness.php' ? 'active' : ''; ?>">
+                <span class="nav-icon">📊</span>
+                <span class="nav-text">Med Effectiveness</span>
             </a>
         </li>
         
