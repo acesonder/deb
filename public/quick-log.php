@@ -54,8 +54,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['template_type'])) {
         VALUES (?, NOW(), ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     ");
     
-    $stmt->bind_param(
-        "iiidddssisss",
+    if (!$stmt->bind_param(
+        "iiidddisssss",
         $user_id,
         $systolic_bp,
         $diastolic_bp,
@@ -69,9 +69,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['template_type'])) {
         $symptoms,
         $medications,
         $notes
-    );
-    
-    if ($stmt->execute()) {
+    )) {
+        $error_message = "Error binding parameters. Please try again.";
+        logFormSubmission('quick-log', false, $user_id, ['bind_error' => $stmt->error, 'template' => $template_type]);
+    } else if ($stmt->execute()) {
         // Check for critical BP and create alert if necessary
         if ($systolic_bp >= 180 || $diastolic_bp >= 120) {
             $alert_msg = "Critical blood pressure reading: $systolic_bp/$diastolic_bp mmHg";
@@ -89,7 +90,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['template_type'])) {
         logFormSubmission('quick-log', true, $user_id, ['template' => $template_type]);
     } else {
         $error_message = "Error logging data. Please try again.";
-        logFormSubmission('quick-log', false, $user_id, ['database_error' => $conn->error, 'template' => $template_type]);
+        logFormSubmission('quick-log', false, $user_id, ['execute_error' => $stmt->error, 'template' => $template_type]);
     }
     
     $stmt->close();
