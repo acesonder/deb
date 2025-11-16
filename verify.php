@@ -8,8 +8,8 @@ session_start();
 
 // Configuration
 $db_host = 'localhost';
-$db_user = 'debuser';
-$db_pass = 'debpass123';
+$db_user = 'root';
+$db_pass = '';
 $db_name = 'deb_health_tracker';
 
 // Store results
@@ -180,11 +180,11 @@ function importSampleData() {
             $sleep = rand(6, 9);
             $activity = ['sedentary', 'light', 'moderate', 'active'][rand(0, 3)];
             $stress = rand(1, 10);
-            $mood = ['great', 'good', 'okay', 'poor'][rand(0, 3)];
+            $mood = ['excellent', 'good', 'fair', 'poor'][rand(0, 3)];
             $notes = "Sample health log entry for day " . (30 - $i);
             
-            $stmt = $conn->prepare("INSERT INTO health_logs (user_id, log_date, systolic, diastolic, heart_rate, weight_lbs, temperature_f, sleep_hours, activity_level, stress_level, mood, notes) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
-            $stmt->bind_param("isiiiidiisss", $user_id, $date, $systolic, $diastolic, $heart_rate, $weight, $temp, $sleep, $activity, $stress, $mood, $notes);
+            $stmt = $conn->prepare("INSERT INTO health_logs (user_id, log_date, systolic_bp, diastolic_bp, heart_rate, weight, temperature, sleep_hours, activity_level, stress_level, mood, notes) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+            $stmt->bind_param("isiiiiddsiss", $user_id, $date, $systolic, $diastolic, $heart_rate, $weight, $temp, $sleep, $activity, $stress, $mood, $notes);
             
             if ($stmt->execute()) {
                 $inserted++;
@@ -195,15 +195,15 @@ function importSampleData() {
         
         // Insert sample medications
         $medications = [
-            ['Lisinopril', '10mg', 'Once daily', 'Morning'],
-            ['Metformin', '500mg', 'Twice daily', 'Morning and Evening'],
-            ['Aspirin', '81mg', 'Once daily', 'Morning']
+            ['Lisinopril', '10mg', 'Once daily'],
+            ['Metformin', '500mg', 'Twice daily'],
+            ['Aspirin', '81mg', 'Once daily']
         ];
         
         $med_inserted = 0;
         foreach ($medications as $med) {
-            $stmt = $conn->prepare("INSERT IGNORE INTO medications (user_id, medication_name, dosage, frequency, time_of_day, start_date, is_active) VALUES (?, ?, ?, ?, ?, CURDATE(), TRUE)");
-            $stmt->bind_param("issss", $user_id, $med[0], $med[1], $med[2], $med[3]);
+            $stmt = $conn->prepare("INSERT IGNORE INTO medications (user_id, medication_name, dosage, frequency, start_date, is_active) VALUES (?, ?, ?, ?, CURDATE(), TRUE)");
+            $stmt->bind_param("isss", $user_id, $med[0], $med[1], $med[2]);
             if ($stmt->execute()) {
                 $med_inserted++;
             }
